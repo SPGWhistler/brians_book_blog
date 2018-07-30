@@ -1,10 +1,11 @@
 const puppeteer = require('puppeteer');
 
-const ids = [
-"B076HY6P86",
-"B07CRQQHG2",
-"B079MFCH2Z"
-];
+let ids = [];
+process.argv.forEach(function (val, index, array) {
+	if (index > 1) {
+		ids.push(val);
+	}
+});
 
 ids.forEach((id) => {
 	(async () => {
