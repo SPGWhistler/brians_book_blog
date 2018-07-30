@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "download-file": "^0.1.5",
     "puppeteer": "^1.6.1"
   },
   "devDependencies": {},
