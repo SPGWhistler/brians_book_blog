@@ -27,7 +27,7 @@ ids.forEach((id) => {
         await page.goto('https://www.audible.com/pd/' + id);
         const resultsSelector = '#center-1';
         await page.waitForSelector(resultsSelector);
-        const title = await page.evaluate(() => document.querySelector('#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li.bc-list-item.bc-spacing-small > h1').innerText)
+        const title = await page.evaluate(() => document.querySelector('#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li:nth-child(1) > h1').innerText)
         const author = await page.evaluate(() => document.querySelector('#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li.bc-list-item.authorLabel').innerText)
         const narrator = await page.evaluate(() => document.querySelector('#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li.bc-list-item.narratorLabel').innerText)
         const publisher = await page.evaluate(() => document.querySelector('#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li.bc-list-item.publisherLabel').innerText)
