@@ -4,6 +4,7 @@ const fs = require('fs');
 const del = require('del');
 const util = require('util');
 const Handlebars = require('handlebars');
+const moment = require('moment');
 
 const selectors = {
     title: '#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li:nth-child(1) > h1',
@@ -15,8 +16,6 @@ const selectors = {
     resultsSelector: '#center-1'
 };
 //strip out existing url stuff
-//add status output
-//switch to a template
 //(?:[/dp/]|$)([A-Z0-9]{10})
 
 del.sync("images/");
@@ -98,11 +97,15 @@ let template = fs.readFileSync('template.html', {
 template = Handlebars.compile(template);
 
 let ids = [];
-process.argv.forEach(function (val, index, array) {
-    if (index > 1) {
-        ids.push(val);
+let urls = process.argv[2];
+urls = urls.split(" ");
+for (let url of urls) {
+    let matches = url.match(/(?:[/dp/]|$)([A-Z0-9]{10})/);
+    if (matches !== null && matches[1]) {
+        ids.push(matches[1]);
     }
-});
+}
+log('log', "Found " + ids.length + " ids.");
 
 (async () => {
     await Promise.all(ids.map(async (id) => {
@@ -124,9 +127,9 @@ process.argv.forEach(function (val, index, array) {
                 await downloadFile(url, imgSrc);
                 log('success', "Done with " + id);
                 return {
-                    dateString: "September 22nd",
-                    year: "2018",
-                    month: "09",
+                    dateString: moment().format('MMMM Do'),
+                    year: moment().format('YYYY'),
+                    month: moment().format('MM'),
                     title,
                     author,
                     narrator,
@@ -144,9 +147,9 @@ process.argv.forEach(function (val, index, array) {
         }
     })).then((results) => {
         let vars = {
-            dateString: "September 22nd",
-            year: "2018",
-            month: "09",
+            dateString: moment().format('MMMM Do'),
+            year: moment().format('YYYY'),
+            month: moment().format('MM'),
             books: results
         };
         writeFile(template(vars));
