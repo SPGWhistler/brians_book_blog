@@ -14,7 +14,6 @@ const selectors = {
     image: '#center-1 > div > div > div > div.bc-col-responsive.bc-col-3 > div > div:nth-child(1) > img',
     resultsSelector: '#center-1'
 };
-//TODO Make puppeteer use slowmo and open window
 //strip out existing url stuff
 //add status output
 //switch to a template
@@ -51,14 +50,6 @@ function log(type, msg, ...args) {
             breakLength: null,
             compact: false
         }));
-        console.log(util.inspect(...args, {
-            showHidden: false,
-            depth: null,
-            colors: true,
-            maxArrayLength: null,
-            breakLength: null,
-            compact: false
-        }));
     }
 };
 
@@ -80,7 +71,7 @@ function stripStuff(str) {
     return str;
 }
 
-async function getProperty(selectorName, property, id) {
+async function getProperty(selectorName, property, id, page) {
     let val = await page.evaluate((selector, property) => {
         let elm = document.querySelector(selector);
         if (elm && elm[property]) {
@@ -113,47 +104,52 @@ process.argv.forEach(function (val, index, array) {
     }
 });
 
-let dateString = "September 22nd";
-let year = "2018";
-let month = "09";
-
-let page;
-let books = [];
 (async () => {
-    const browser = await puppeteer.launch();
     await Promise.all(ids.map(async (id) => {
         try {
-            page = await browser.newPage();
+            log('log', "Started " + id);
+            const browser = await puppeteer.launch();
+            let page = await browser.newPage();
             let result = await page.goto('https://www.audible.com/pd/' + id);
             if (result.ok()) {
                 await page.waitForSelector(selectors.resultsSelector);
-                let title = stripStuff(await getProperty('title', 'innerText', id));
-                let author = stripStuff(await getProperty('author', 'innerText', id));
-                let narrator = stripStuff(await getProperty('narrator', 'innerText', id));
-                let publisher = stripStuff(await getProperty('publisher', 'innerText', id));
-                let description = stripStuff(await getProperty('description', 'innerText', id));
-                let url = await getProperty('image', 'src', id);
-                let imgUrl = encodeURIComponent(title + ".jpg").replace(/%20/g, " ");
+                let title = stripStuff(await getProperty('title', 'innerText', id, page));
+                let author = stripStuff(await getProperty('author', 'innerText', id, page));
+                let narrator = stripStuff(await getProperty('narrator', 'innerText', id, page));
+                let publisher = stripStuff(await getProperty('publisher', 'innerText', id, page));
+                let description = stripStuff(await getProperty('description', 'innerText', id, page));
+                let url = await getProperty('image', 'src', id, page);
+                let imgSrc = encodeURIComponent(title + ".jpg").replace(/%20/g, " ");
 
-                books.push({
+                await downloadFile(url, imgSrc);
+                log('success', "Done with " + id);
+                return {
+                    dateString: "September 22nd",
+                    year: "2018",
+                    month: "09",
                     title,
                     author,
                     narrator,
                     publisher,
                     description,
-                    imgUrl
-                });
-                await downloadFile(url, imgUrl);
-                //Keep this line below 'downloadFile'.
+                    imgSrc
+                };
             } else {
-                log("error", "Could not get data from site with id '" + id + "'.", result.status());
+                log("error", "Page navigation error. Could not get data from site with id '" + id + "'.", result.status());
             }
             await browser.close();
         } catch (error) {
-            log("error", "Could not get data from site with id '" + id + "'.", error);
+            log("error", error);
+            log("error", "General Error. Could not get data from site with id '" + id + "'.", error);
         }
-    })).then(() => {
-        log('log', books);
-        //writeFile(output);
+    })).then((results) => {
+        let vars = {
+            dateString: "September 22nd",
+            year: "2018",
+            month: "09",
+            books: results
+        };
+        writeFile(template(vars));
+        process.exit();
     });
 })();

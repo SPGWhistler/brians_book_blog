@@ -1,4 +1,4 @@
-<p style="text-align: center;"><img class="alignnone wp-image-7061 size-full" src="https://briansbookblog.com/wp-content/uploads/2018/09/Sep-22nd.jpg" alt="" width="1503" height="1000" /></p>
+<p style="text-align: center;"><img class="alignnone wp-image-7061 size-full" src="https://briansbookblog.com/wp-content/uploads/{{year}}/{{month}}/{{dateString}}.jpg" alt="" width="1503" height="1000" /></p>
 
 <h2 style="text-align: center;">Welcome to Brian’s Book Blog’s weekly New and Notable Post for the Week of {{date}}.  We share the 10 books from this week that caught our eye featuring Post-Apocalyptic, Horror, Sci-Fi, Thrillers, and more. Enjoy!</h2>
 &nbsp;
@@ -18,11 +18,12 @@ Get 2 free books (instead of just 1!) when you sign up using this link:
 &nbsp;
 
 {{#books}}
-    <hr />
-    <a href="https://amzn.to/2xEGj7V"><img class="size-medium wp-image-7056 alignleft" src="https://briansbookblog.com/wp-content/uploads/{{year}}/{{month}}/{{imgSrc}}-300x300.jpg" alt="" width="300" height="300" /></a>
-    <a href="https://amzn.to/2xEGj7V"><strong>{{title}} {{author}}</strong></a>
-    {{narrator}}
-    {{publisher}}
-    {{description}}
-{{/books}}
 
+<hr />
+<a href="https://amzn.to/2xEGj7V"><img class="size-medium wp-image-7056 alignleft" src="https://briansbookblog.com/wp-content/uploads/{{year}}/{{month}}/{{imgSrc}}-300x300.jpg" alt="" width="300" height="300" /></a>
+<a href="https://amzn.to/2xEGj7V"><strong>{{title}} {{author}}</strong></a>
+{{narrator}}
+{{publisher}}
+{{description}}
+
+{{/books}}
