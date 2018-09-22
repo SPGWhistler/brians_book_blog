@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const download = require('download-file');
 const fs = require('fs');
 const del = require('del');
+const util = require('util');
 
 const selectors = {
     title: '#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li:nth-child(1) > h1',
@@ -13,6 +14,7 @@ const selectors = {
 };
 
 del.sync("images/");
+del.sync("output.txt");
 
 function log(type, msg) {
     let color;
@@ -31,7 +33,18 @@ function log(type, msg) {
             color = "\x1b[0m%s\x1b[0m"; //reset
             break;
     }
-    console.log(color, msg);
+    if (typeof msg === "string") {
+        console.log(color, msg);
+    } else {
+        console.log(util.inspect(msg, {
+            showHidden: false,
+            depth: null,
+            colors: true,
+            maxArrayLength: null,
+            breakLength: null,
+            compact: false
+        }));
+    }
 };
 
 function downloadFile(url, filename) {
@@ -52,7 +65,7 @@ function stripStuff(str) {
     return str;
 }
 
-async function getProperty(selectorName, property) {
+async function getProperty(selectorName, property, id) {
     let val = await page.evaluate((selector, property) => {
         let elm = document.querySelector(selector);
         if (elm && elm[property]) {
@@ -63,13 +76,13 @@ async function getProperty(selectorName, property) {
     if (val) {
         return val;
     }
-    log('error', 'Could not find the ' + selectorName + ' element.\n');
+    log('warn', 'Could not find the ' + selectorName + ' element for ' + id + '.\n');
     return "";
 }
 
 function writeFile(output) {
     fs.writeFileSync("output.txt", output, {
-        flag: "w"
+        flag: "a"
     });
 }
 
@@ -86,36 +99,35 @@ ids.forEach((id) => {
         try {
             const browser = await puppeteer.launch();
             page = await browser.newPage();
-            await page.goto('https://www.audible.com/pd/' + id);
-            const resultsSelector = '#center-1';
-            await page.waitForSelector(resultsSelector);
-            let title = await getProperty('title', 'innerText');
-            let author = await getProperty('author', 'innerText');
-            let narrator = await getProperty('narrator', 'innerText');
-            let publisher = await getProperty('publisher', 'innerText');
-            let description = await getProperty('description', 'innerText');
-            const imgUrl = await getProperty('image', 'src');
-            title = stripStuff(title);
-            author = stripStuff(author);
-            narrator = stripStuff(narrator);
-            publisher = stripStuff(publisher);
-            description = stripStuff(description);
+            let result = await page.goto('https://www.audible.com/pd/' + id);
+            if (result.ok()) {
+                const resultsSelector = '#center-1';
+                await page.waitForSelector(resultsSelector);
+                let title = stripStuff(await getProperty('title', 'innerText', id));
+                let author = stripStuff(await getProperty('author', 'innerText', id));
+                let narrator = stripStuff(await getProperty('narrator', 'innerText', id));
+                let publisher = stripStuff(await getProperty('publisher', 'innerText', id));
+                let description = stripStuff(await getProperty('description', 'innerText', id));
+                const imgUrl = await getProperty('image', 'src', id);
 
-            let output = "";
-            output += "<hr />";
-            output += "<hr />";
-            output += "<p>IMAGE</p>";
-            output += "<strong>" + title + " " + author + "</strong>";
-            output += narrator;
-            output += publisher;
-            output += description;
-            writeFile(output);
-            await downloadFile(imgUrl, encodeURIComponent(title + ".jpg").replace(/%20/g, " "));
-
+                let output = "";
+                output += "<hr />";
+                output += "<hr />";
+                output += "<p>IMAGE</p>";
+                output += "<strong>" + title + " " + author + "</strong>";
+                output += narrator;
+                output += publisher;
+                output += description;
+                output += "\n\n";
+                await downloadFile(imgUrl, encodeURIComponent(title + ".jpg").replace(/%20/g, " "));
+                //Keep this line below 'downloadFile'.
+                writeFile(output);
+            } else {
+                log("error", "Could not get data from site with id '" + id + "'.", result.status());
+            }
             await browser.close();
         } catch (error) {
-            console.log("Could not get data from site with id '" + id + "'.", error);
-            process.exit();
+            log("error", "Could not get data from site with id '" + id + "'.", error);
         }
     })();
 });
