@@ -12,11 +12,16 @@ const selectors = {
     description: '#center-8 > div > div > div:nth-child(2)',
     image: '#center-1 > div > div > div > div.bc-col-responsive.bc-col-3 > div > div:nth-child(1) > img'
 };
+//TODO Make puppeteer use slowmo and open window
+//strip out existing url stuff
+//add status output
+//switch to a template
+//(?:[/dp/]|$)([A-Z0-9]{10})
 
 del.sync("images/");
 del.sync("output.txt");
 
-function log(type, msg) {
+function log(type, msg, ...args) {
     let color;
     switch (type) {
         case "success":
@@ -37,6 +42,14 @@ function log(type, msg) {
         console.log(color, msg);
     } else {
         console.log(util.inspect(msg, {
+            showHidden: false,
+            depth: null,
+            colors: true,
+            maxArrayLength: null,
+            breakLength: null,
+            compact: false
+        }));
+        console.log(util.inspect(...args, {
             showHidden: false,
             depth: null,
             colors: true,
