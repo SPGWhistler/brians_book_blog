@@ -47,7 +47,7 @@ ids.forEach((id) => {
             description = stripStuff(description);
 
             console.log("<hr />");
-            console.log("<h3>IMAGE HERE</H3>");
+            console.log("<p>IMAGE</p>");
             console.log("<strong>" + title + " " + author + "</strong>");
             console.log(narrator);
             console.log(publisher);
