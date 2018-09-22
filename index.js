@@ -1,3 +1,4 @@
+//Include a bunch of stuff we use
 const puppeteer = require('puppeteer');
 const download = require('download-file');
 const fs = require('fs');
@@ -6,6 +7,7 @@ const util = require('util');
 const Handlebars = require('handlebars');
 const moment = require('moment');
 
+//These are the selectors we use
 const selectors = {
     title: '#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li:nth-child(1) > h1',
     author: '#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li.bc-list-item.authorLabel',
@@ -15,12 +17,12 @@ const selectors = {
     image: '#center-1 > div > div > div > div.bc-col-responsive.bc-col-3 > div > div:nth-child(1) > img',
     resultsSelector: '#center-1'
 };
-//strip out existing url stuff
-//(?:[/dp/]|$)([A-Z0-9]{10})
 
+//Clean up from last time
 del.sync("images/");
 del.sync("output.html");
 
+//Utility functions
 function log(type, msg, ...args) {
     let color;
     switch (type) {
@@ -51,7 +53,6 @@ function log(type, msg, ...args) {
         }));
     }
 };
-
 function downloadFile(url, filename) {
     return new Promise(resolve => {
         download(url, {
@@ -63,13 +64,11 @@ function downloadFile(url, filename) {
         })
     });
 };
-
 function stripStuff(str) {
     str = str.replace(/by:/i, "by");
     str = str.replace(/publisher:/i, "Publisher");
     return str;
 }
-
 async function getProperty(selectorName, property, id, page) {
     let val = await page.evaluate((selector, property) => {
         let elm = document.querySelector(selector);
@@ -84,18 +83,22 @@ async function getProperty(selectorName, property, id, page) {
     log('warn', 'Could not find the ' + selectorName + ' element for ' + id + '.\n');
     return "";
 }
-
 function writeFile(output) {
     fs.writeFileSync("output.txt", output, {
         flag: "a"
     });
 }
 
+
+//Main script below here
+
+//Read in the template and 'compile' it.
 let template = fs.readFileSync('template.html', {
     flag: 'r'
 }).toString();
 template = Handlebars.compile(template);
 
+//Get the ASIN numbers from the path arguments
 let ids = [];
 let urls = process.argv[2];
 urls = urls.split(" ");
@@ -107,15 +110,20 @@ for (let url of urls) {
 }
 log('log', "Found " + ids.length + " ids.");
 
+//Asynchronously request the pages (in parallel)
 (async () => {
     await Promise.all(ids.map(async (id) => {
         try {
             log('log', "Started " + id);
             const browser = await puppeteer.launch();
             let page = await browser.newPage();
+            //Naviage to the page
             let result = await page.goto('https://www.audible.com/pd/' + id);
             if (result.ok()) {
+                //Wait until the page is loaded
                 await page.waitForSelector(selectors.resultsSelector);
+
+                //Find the elements we care about (in our template)
                 let title = stripStuff(await getProperty('title', 'innerText', id, page));
                 let author = stripStuff(await getProperty('author', 'innerText', id, page));
                 let narrator = stripStuff(await getProperty('narrator', 'innerText', id, page));
@@ -124,7 +132,10 @@ log('log', "Found " + ids.length + " ids.");
                 let url = await getProperty('image', 'src', id, page);
                 let imgSrc = encodeURIComponent(title + ".jpg").replace(/%20/g, " ");
 
+                //Download the image
                 await downloadFile(url, imgSrc);
+
+                //All done with this request
                 log('success', "Done with " + id);
                 return {
                     dateString: moment().format('MMMM Do'),
@@ -140,12 +151,14 @@ log('log', "Found " + ids.length + " ids.");
             } else {
                 log("error", "Page navigation error. Could not get data from site with id '" + id + "'.", result.status());
             }
+            //There is a small bug here. I'll fix it later. (sometimes the script will hang)
             await browser.close();
         } catch (error) {
             log("error", error);
             log("error", "General Error. Could not get data from site with id '" + id + "'.", error);
         }
     })).then((results) => {
+        //After all pages have finished, we 'render' the template and save it to a file.
         let vars = {
             dateString: moment().format('MMMM Do'),
             year: moment().format('YYYY'),
