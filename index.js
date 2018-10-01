@@ -20,7 +20,7 @@ const selectors = {
 
 //Clean up from last time
 del.sync("images/");
-del.sync("output.html");
+del.sync("output.txt");
 
 //Utility functions
 function log(type, msg, ...args) {
