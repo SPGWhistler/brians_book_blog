@@ -66,7 +66,7 @@ function downloadFile(url, filename) {
 };
 function stripStuff(str) {
     str = str.replace(/by:/i, "by");
-    str = str.replace(/publisher:/i, "Publisher");
+    str = str.replace(/publisher: /i, "");
     return str;
 }
 async function getProperty(selectorName, property, id, page) {
@@ -130,7 +130,7 @@ log('log', "Found " + ids.length + " ids.");
                 let publisher = stripStuff(await getProperty('publisher', 'innerText', id, page));
                 let description = stripStuff(await getProperty('description', 'innerText', id, page));
                 let url = await getProperty('image', 'src', id, page);
-                let imgSrc = encodeURIComponent(title + ".jpg").replace(/%20/g, " ");
+                let imgSrc = encodeURIComponent(title + ".jpg").replace(/%20/g, "-");
 
                 //Download the image
                 await downloadFile(url, imgSrc);
