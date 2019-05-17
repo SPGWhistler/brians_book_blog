@@ -15,7 +15,8 @@ const selectors = {
     //publisher: '#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li.bc-list-item.publisherLabel',
     description: '#center-8 > div > div > div:nth-child(2)',
     image: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-4.bc-push-1 > div > div:nth-child(1) > img',
-    resultsSelector: '#center-1'
+				resultsSelector: '#center-1',
+				mp3: 'button[data-mp3]'
 };
 
 //Clean up from last time
@@ -68,6 +69,20 @@ function stripStuff(str) {
     str = str.replace(/by:/i, "by");
     //str = str.replace(/publisher: /i, "");
     return str;
+}
+async function getAttribute(selectorName, attribute, id, page) {
+    let val = await page.evaluate((selector, attribute) => {
+        let elm = document.querySelector(selector);
+        if (elm) {
+            return elm.getAttribute(attribute);
+        }
+        return false;
+    }, selectors[selectorName], attribute);
+    if (val) {
+        return val;
+    }
+    log('warn', 'Could not find the ' + selectorName + ' element for ' + id + '.\n');
+    return "";
 }
 async function getProperty(selectorName, property, id, page) {
     let val = await page.evaluate((selector, property) => {
@@ -123,17 +138,21 @@ log('log', "Found " + ids.length + " ids.");
                 //Wait until the page is loaded
                 await page.waitForSelector(selectors.resultsSelector);
 
-                //Find the elements we care about (in our template)
+																//Find the elements we care about (in our template)
+																let mp3Url = await getAttribute('mp3', 'data-mp3', id, page);
                 let title = stripStuff(await getProperty('title', 'innerText', id, page));
                 let author = stripStuff(await getProperty('author', 'innerText', id, page));
                 let narrator = stripStuff(await getProperty('narrator', 'innerText', id, page));
                 //let publisher = stripStuff(await getProperty('publisher', 'innerText', id, page));
                 let description = stripStuff(await getProperty('description', 'innerText', id, page));
                 let url = await getProperty('image', 'src', id, page);
-                let imgSrc = encodeURIComponent(title + ".jpg").replace(/%20/g, "-");
+																let imgSrc = encodeURIComponent(title + ".jpg").replace(/%20/g, "-");
 
                 //Download the image
-                await downloadFile(url, imgSrc);
+																await downloadFile(url, imgSrc);
+																
+																//Downlad the mp3
+																await downloadFile(mp3Url, title + ".mp3");
 
                 //All done with this request
                 log('success', "Done with " + id);
