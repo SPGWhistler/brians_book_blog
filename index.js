@@ -146,13 +146,14 @@ log('log', "Found " + ids.length + " ids.");
                 //let publisher = stripStuff(await getProperty('publisher', 'innerText', id, page));
                 let description = stripStuff(await getProperty('description', 'innerText', id, page));
                 let url = await getProperty('image', 'src', id, page);
-																let imgSrc = encodeURIComponent(title + ".jpg").replace(/%20/g, "-");
+																let imgSrc = encodeURIComponent(title + ".jpg").replace(/%20|%3A/ig, "-");
+																let mp3Src = encodeURIComponent(title + ".mp3").replace(/%20|%3A/ig, "-");
 
                 //Download the image
 																await downloadFile(url, imgSrc);
 																
 																//Downlad the mp3
-																await downloadFile(mp3Url, title + ".mp3");
+																await downloadFile(mp3Url, mp3Src);
 
                 //All done with this request
                 log('success', "Done with " + id);
