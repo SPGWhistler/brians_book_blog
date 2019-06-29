@@ -10,9 +10,9 @@ const moment = require('moment');
 //These are the selectors we use
 const selectors = {
     title: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-6.bc-push-1 > h1',
-    author: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-6.bc-push-1 > div:nth-child(4) > span',
-    narrator: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-6.bc-push-1 > div:nth-child(5)',
-    //publisher: '#center-1 > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li.bc-list-item.publisherLabel',
+    author: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-6.bc-push-1 > div:nth-child(3) > span',
+    narrator: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-6.bc-push-1 > div:nth-child(4)',
+    //publisher: '#center-8 > div > div > div:nth-child(3)',
     description: '#center-8 > div > div > div:nth-child(2)',
     image: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-4.bc-push-1 > div > div:nth-child(1) > img',
 				resultsSelector: '#center-1',
@@ -151,7 +151,7 @@ log('log', "Found " + ids.length + " ids.");
 
                 //Download the image
 																await downloadFile(url, imgSrc);
-																
+
 																//Downlad the mp3
 																await downloadFile(mp3Url, mp3Src);
 
