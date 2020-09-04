@@ -9,12 +9,12 @@ const moment = require('moment');
 
 //These are the selectors we use
 const selectors = {
-    title: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-6.bc-push-1 > h1',
-    author: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-6.bc-push-1 > div:nth-child(3) > span',
-    narrator: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-6.bc-push-1 > div:nth-child(4)',
+    title: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col-responsive.bc-col-5 > h1',
+    author: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col-responsive.bc-col-5 > div:nth-child(3) > span',
+    narrator: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col-responsive.bc-col-5 > div:nth-child(4) > span',
     publisher: '#center-8 > div > div > div:nth-child(3) > span',
     description: '#center-8 > div > div > div:nth-child(2)',
-    image: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col.bc-col-4.bc-push-1 > div > div:nth-child(1) > img',
+    image: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col-responsive.bc-col-3 > div > div:nth-child(1) > img',
 		resultsSelector: '#center-1',
 		//mp3: 'button[data-mp3]'
 };
