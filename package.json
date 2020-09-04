@@ -6,7 +6,7 @@
   "dependencies": {
     "del": "^3.0.0",
     "download-file": "^0.1.5",
-    "handlebars": "^4.0.12",
+    "handlebars": "^4.4.5",
     "moment": "^2.22.2",
     "puppeteer": "^1.6.1"
   },
