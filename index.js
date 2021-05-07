@@ -9,9 +9,9 @@ const moment = require('moment');
 
 //These are the selectors we use
 const selectors = {
-    title: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col-responsive.bc-col-5 > h1',
-    author: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col-responsive.bc-col-5 > div:nth-child(3) > span',
-    narrator: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col-responsive.bc-col-5 > div:nth-child(4) > span',
+    title: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col-responsive.bc-col-5 > span > ul > li:nth-child(1)',
+    author: 'li.bc-list-item.authorLabel',
+    narrator: 'li.bc-list-item.narratorLabel',
     publisher: '#center-8 > div > div > div:nth-child(3) > span',
     description: '#center-8 > div > div > div:nth-child(2)',
     image: '#center-1 > div > div.hero-content.bc-pub-clearfix.bc-container > div > div > div > div.bc-col-responsive.bc-col-3 > div > div:nth-child(1) > img',
