@@ -8,7 +8,7 @@
     "download-file": "^0.1.5",
     "handlebars": "^4.0.12",
     "moment": "^2.22.2",
-    "puppeteer": "^1.6.1"
+    "puppeteer": "^1.13.0"
   },
   "devDependencies": {},
   "scripts": {
